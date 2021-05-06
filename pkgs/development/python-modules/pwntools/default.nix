@@ -1,4 +1,5 @@
 { lib
+, stdenv
 , buildPythonPackage
 , debugger
 , fetchPypi
@@ -21,7 +22,24 @@
 , unicorn
 , intervaltree
 , fetchpatch
+, binutils-unwrapped
+, extraBinutilsTargets ? []
 }:
+
+let
+  makeBinutils = target:
+    let
+      crossStdenv = stdenv.override {
+        targetPlatform = lib.systems.elaborate {
+          config = target;
+        };
+      };
+    in binutils-unwrapped.override {
+      stdenv = crossStdenv;
+      noSysDirs = true;
+    };
+  extraBinutils = map makeBinutils extraBinutilsTargets;
+in
 
 buildPythonPackage rec {
   version = "4.3.1";
@@ -56,7 +74,7 @@ buildPythonPackage rec {
     tox
     unicorn
     intervaltree
-  ];
+  ] ++ extraBinutils;
 
   doCheck = false; # no setuptools tests for the package
 

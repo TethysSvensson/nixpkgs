@@ -30443,6 +30443,7 @@ in
   pwncat = python3Packages.callPackage ../tools/security/pwncat { };
 
   pwntools = with python3Packages; toPythonApplication pwntools;
+  pwntools-full = pwntools.override { extraBinutilsTargets = [ "aarch64-unknown-linux-gnu" ]; };
 
   uae = callPackage ../misc/emulators/uae { };
 
